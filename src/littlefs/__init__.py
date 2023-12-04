@@ -15,7 +15,7 @@ except DistributionNotFound:
     # Package not installed
     pass
 
-from .context import UserContext, UserContextWinDisk
+from .context import UserContext, UserContextWinDisk, UserContextLinuxDisk
 
 if TYPE_CHECKING:
     from .lfs import LFSStat
