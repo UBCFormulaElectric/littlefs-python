@@ -1,6 +1,6 @@
+import ctypes
 import logging
 import typing
-import ctypes 
 
 if typing.TYPE_CHECKING:
     from .lfs import LFSConfig
@@ -92,7 +92,7 @@ class UserContextWinDisk(UserContext):
         # if the user does not have the pywin
         if win32file == None:
             raise ImportError("Unable to import 'win32file'. This module is required for Windows-specific functionality. Please ensure you are running on a Windows platform or install 'pywin32' using: 'pip install pywin32'.")
-        self.device = win32file.CreateFile(disk_path, win32file.GENERIC_READ, win32file.FILE_SHARE_READ, None, win32file.OPEN_EXISTING, 0, None)
+        self.device = win32file.CreateFile(disk_path, win32file.GENERIC_READ | win32file.GENERIC_WRITE, win32file.FILE_SHARE_READ, None, win32file.OPEN_EXISTING, 0, None)
         if self.device == win32file.INVALID_HANDLE_VALUE:
             raise IOError("Could not open disk %s" % disk_path)
 
@@ -153,9 +153,9 @@ class UserContextWinDisk(UserContext):
         """
         logging.getLogger(__name__).debug('LFS Erase: Block: %d' % block)
         start = block * cfg.block_size
-        
+        data = bytes([0xFF] * cfg.block_size)
         win32file.SetFilePointer(self.device, start, win32file.FILE_BEGIN)
-        win32file.WriteFile(self.device, [0xFF] * cfg.block_size)
+        win32file.WriteFile(self.device, data)
         return 0
     
     def sync(self, cfg: 'LFSConfig') -> int:
